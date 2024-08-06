@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductManager.Data;
 using ProductManager.Models;
+using ProductManager.Services;
 
 namespace ProductManager.Controllers
 {
@@ -9,44 +10,44 @@ namespace ProductManager.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;
-        private IProductAccess productAccess;
+        private IProductService productService;
 
-        public ProductsController(ILogger<ProductsController> logger, IProductAccess productAccess)
+        public ProductsController(ILogger<ProductsController> logger, IProductService productService)
         {
             _logger = logger;
-            this.productAccess = productAccess;
+            this.productService = productService;
         }
 
         [HttpGet]
         public List<Product> Get()
         {
-            var products = productAccess.List();
+            var products =  productService.List();
             return products;
         }
 
         [HttpPost]
         public void CreateProduct(Product product)
         {
-            productAccess.Create(product);
+            productService.Create(product);
         }
 
         [HttpGet("{id}")]
         public Product Get(int id)
         {
-            var product = productAccess.GetById(id);
+            var product = productService.GetById(id);
             return product;
         }
 
         [HttpPut("{id}")]
-        public int UpdateProduct(int id, Product product)
+        public void UpdateProduct(int id, Product product)
         {
-            return productAccess.Update(id, product);
+            productService.Update(id, product);
         }
 
         [HttpDelete("{id}")]
-        public int RemoveProduct(int id)
+        public void RemoveProduct(int id)
         {
-            return productAccess.Remove(id);
+            productService.Remove(id);
         }
 
     }

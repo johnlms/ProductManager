@@ -9,22 +9,27 @@ namespace ProductManager.Data
     {
         // Load initial data from .json file
         private static List<Models.Product>? _products = new List<Models.Product>();
-        static ProductAccess() { 
-            _products.Clear();
-            string jsonFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Data\Products.json");
-            try
+
+        public ProductAccess() { 
+            // If no data is loaded, then initialize from the .json file to emulate a database load.
+            if (_products.Count == 0)
             {
-                using (StreamReader sr = new StreamReader(jsonFile))
+                string jsonFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Data\Products.json");
+                try
                 {
-                    string json = sr.ReadToEnd();
-                    Console.WriteLine("json: " + json);
-                    _products = JsonSerializer.Deserialize<List<Models.Product>>(json);
-                    Console.WriteLine("Loaded Products.json file successfully from location[" + jsonFile + ']');
+                    using (StreamReader sr = new StreamReader(jsonFile))
+                    {
+                        string json = sr.ReadToEnd();
+                        Console.WriteLine("json: " + json);
+                        _products = JsonSerializer.Deserialize<List<Models.Product>>(json);
+                        Console.WriteLine("Loaded Products.json file successfully from location[" + jsonFile + ']');
+                    }
                 }
-            }
-            catch (Exception e) { 
-                Console.WriteLine("Unable to read Products.json! location[" + jsonFile + ']');
-                Console.WriteLine(e.Message);
+                catch (Exception e)
+                {
+                    Console.WriteLine("Unable to read Products.json! location[" + jsonFile + ']');
+                    Console.WriteLine(e.Message);
+                }
             }
         }
 
@@ -39,7 +44,7 @@ namespace ProductManager.Data
         {
             if (id != null)
             {
-                return _products.Find(p => p.ID.Equals(id.Value.ToString()));
+                return _products.Find(p => p.ID == id.Value);
             }
             return null;
         }
@@ -53,7 +58,7 @@ namespace ProductManager.Data
         public int Remove(int? id)
         {
             if (id == null) return 0;
-            else return _products.RemoveAll(p => p.ID.Equals(id.Value.ToString()));
+            else return _products.RemoveAll(p => p.ID == id.Value);
         }
 
         // Update an existing product
@@ -61,13 +66,13 @@ namespace ProductManager.Data
         {
             if (id != null)
             {
-                if (_products.Exists(p => p.ID.Equals(id.Value.ToString())))
+                if (_products.Exists(p => p.ID == id.Value))
                 {
-                    var p = _products.Find(x => x.ID.Equals(id.Value.ToString()));
+                    var p = _products.Find(x => x.ID == id.Value);
                     if (p != null)
                     {
                         p.Name = product.Name;
-                        p.Price = p.Price;
+                        p.Price = product.Price;
                         p.Quantity = product.Quantity;
                     }
                     return 1;

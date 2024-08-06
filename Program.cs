@@ -6,15 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options => options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.WriteAsString);
+builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Include custom data access class
-builder.Services.AddHostedService<ProductService>();
-builder.Services.AddTransient<IProductAccess, ProductAccess>();
+builder.Services.AddSingleton<IProductAccess, ProductAccess>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 
