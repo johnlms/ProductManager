@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProductManager.Data;
 using ProductManager.Models;
 using ProductManager.Services;
 
@@ -19,35 +18,83 @@ namespace ProductManager.Controllers
         }
 
         [HttpGet]
-        public List<Product> Get()
+        [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Get()
         {
-            var products =  productService.List();
-            return products;
+            try
+            {
+                var products = productService.List();
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
-        public void CreateProduct(Product product)
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult CreateProduct(Product product)
         {
-            productService.Create(product);
+            try
+            {
+                productService.Create(product);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
-        public Product Get(int id)
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Get(int id)
         {
-            var product = productService.GetById(id);
-            return product;
+            try
+            {
+                var product = productService.GetById(id);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
-        public void UpdateProduct(int id, Product product)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult UpdateProduct(int id, Product product)
         {
-            productService.Update(id, product);
+            try
+            {
+                productService.Update(id, product);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
-        public void RemoveProduct(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult RemoveProduct(int id)
         {
-            productService.Remove(id);
+            try
+            {
+                productService.Remove(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
     }

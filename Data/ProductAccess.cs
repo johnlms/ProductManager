@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Concurrent;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
+using ProductManager.Exceptions;
 
 namespace ProductManager.Data
 {
@@ -51,34 +50,52 @@ namespace ProductManager.Data
 
         // Create a new Product
         public void Create(Models.Product product) {
-            _products.Add(product);
+            if (product == null) throw new ProductDataException(@"[invalid product]");
+            if (_products.Exists(p => p.Name == product.Name)) throw new ProductDataException($"[product with name[{product.Name}] already exists]");
+            try
+            {
+                _products.Add(product);
+            }
+            catch (Exception e) {
+                throw new ProductDataException($"[unable to add product with id[{product.ID}]]", e);
+            }
         }
 
         // Remove existing product with matching id
         public int Remove(int? id)
         {
-            if (id == null) return 0;
-            else return _products.RemoveAll(p => p.ID == id.Value);
+            if (id == null) throw new ProductDataException(@"[invalid product]");
+            try
+            {
+                return _products.RemoveAll(p => p.ID == id.Value);
+            }
+            catch (Exception e)
+            {
+                throw new ProductDataException($"[error while removing product with id[{id}]]", e);
+            }
         }
 
         // Update an existing product
         public int Update(int? id, Models.Product product)
         {
-            if (id != null)
+            if (id.HasValue)
             {
-                if (_products.Exists(p => p.ID == id.Value))
+                var p = _products.Find(x => x.ID == id.Value);
+                if (p == null)
                 {
-                    var p = _products.Find(x => x.ID == id.Value);
-                    if (p != null)
-                    {
-                        p.Name = product.Name;
-                        p.Price = product.Price;
-                        p.Quantity = product.Quantity;
-                    }
-                    return 1;
+                    throw new ProductDataException(@"[product not found]");
                 }
+                else {
+                    p.Name = product.Name;
+                    p.Price = product.Price;
+                    p.Quantity = product.Quantity;
+                }
+                return 1;
             }
-            return 0;
+            else
+            {
+                throw new ProductDataException(@"[product not found]");
+            }
         }
 
     }

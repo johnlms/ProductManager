@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Diagnostics;
 using ProductManager.Data;
+using ProductManager.Exceptions;
 using ProductManager.Services;
 using System.ComponentModel;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
